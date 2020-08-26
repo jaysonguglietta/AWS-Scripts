@@ -1,5 +1,4 @@
 """ This script will print the list of IAM users who have console access but MFA not enabled.
-Author: Kannan Anandakrishnan
 Requirements: boto3 package installed, aws credentials configured.
 """
 
