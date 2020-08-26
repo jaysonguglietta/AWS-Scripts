@@ -1,0 +1,48 @@
+Quick and Dirty handy CLI one-liners
+
+
+Some handy quick CLI commands
+
+
+Attached volumes, NOT encrypted
+aws ec2 describe-volumes --filters Name=encrypted,Values=false Name=attachment.status,Values=attached --query 'Volumes[*].Attachments[*].{Volume:VolumeId,Instance:InstanceId}' --output table
+
+Attached volumes, encrypted
+aws ec2 describe-volumes --filters Name=encrypted,Values=true Name=attachment.status,Values=attached --query 'Volumes[*].Attachments[*].{Volume:VolumeId,Instance:InstanceId}' --output table
+
+
+NOT Attached volumes, NOT encrypted
+aws ec2 describe-volumes --filters Name=encrypted,Values=false Name=attachment.status,Values=available --query 'Volumes[*].Attachments[*].{Volume:VolumeId,Instance:InstanceId}' --output table
+
+NOT Attached volumes, encrypted
+aws ec2 describe-volumes --filters Name=encrypted,Values=true Name=attachment.status,Values=available --query 'Volumes[*].Attachments[*].{Volume:VolumeId,Instance:InstanceId}' --output table
+
+
+InstanceID, Size, Public IP, Name
+aws ec2 describe-instances --query 'Reservations[].Instances[].[InstanceId,InstanceType,PublicIpAddress,Tags[?Key==`Name`]| [0].Value]' --output table
+
+
+NOT Encrypted ALL Volumes. AZ, Volume ID, Instance ID, Size
+aws ec2 describe-volumes --filters Name=encrypted,Values=false --query 'Volumes[*].{ID:VolumeId,InstanceId:Attachments[0].InstanceId,AZ:AvailabilityZone,Size:Size}' --output table
+
+Encrypted ALL Volumes. AZ, Volume ID, Instance ID, Size
+aws ec2 describe-volumes --filters Name=encrypted,Values=true --query 'Volumes[*].{ID:VolumeId,InstanceId:Attachments[0].InstanceId,AZ:AvailabilityZone,Size:Size}' --output table
+
+Attached volumes, encrypted
+aws ec2 describe-volumes --filters Name=encrypted,Values=true Name=attachment.status,Values=attached --query 'Volumes[*].Attachments[*].{Volume:VolumeId,Instance:InstanceId}' --output table
+
+lists volumes where the status is set to available, for all Regions
+for REGION in $(aws ec2 describe-regions --output text --query 'Regions[].[RegionName]') ; do echo $REGION && aws ec2 describe-volumes --filter "Name=status,Values=available" --query 'Volumes[*].{VolumeID:VolumeId,Size:Size,Type:VolumeType,AvailabilityZone:AvailabilityZone}' --region $REGION; done
+
+Is EBS Volume Encryption turned on by accident
+aws ec2 get-ebs-encryption-by-default
+
+
+IAM User
+aws iam list-users --output table
+
+IAM Showing MFA and Last password used date
+aws iam list-virtual-mfa-devices
+
+List the current users MFA
+aws iam list-mfa-devices
